@@ -17,7 +17,7 @@ INSERT INTO `utilisateurs` VALUES
   (3,'leila','leila123',3000,'client')
 ;
 
-update utilisateurs set motdepasse = conv(floor(rand() * 99999999999999), 20, 36) WHERE id = 1;
+update utilisateurs set motdepasse = 'repository69'  WHERE id = 1;
 
 DROP TABLE IF EXISTS `messages`;
 CREATE TABLE `messages` (

@@ -1,17 +1,21 @@
-<?php 
-require_once 'banque.php'; 
-require_once 'debut-page.php'; 
+<?php
+require_once 'banque.php';
+require_once 'debut-page.php';
 
 // Traitement de la soumission  du formulaire
 if(isset($_POST['nom']))
 {
+if(!$_POST['motdepasse'] == null)
+{
 	// Construire la requête SQL avec les champs saisis par l'utilisateur dans le formulaire
-	$sql="SELECT * FROM utilisateurs WHERE nom='".$_POST['nom']."' AND motdepasse='".$_POST['motdepasse']."'";
+	$sql="SELECT * FROM utilisateurs WHERE nom=:nom AND motdepasse=:mdp";
 	// Faire la requête SQL
 	$query=$pdo->prepare($sql);
+	$query->bindValue(':nom', $_POST['nom']);
+	$query->bindValue(':mdp', $_POST['motdepasse']);
 	$query->execute();
 
-	if($query===false)
+	if($query==false)
 	{
 		echo 'La requete SQL a echouée : <pre>'.htmlentities($sql).'</pre>';
 	}
@@ -19,8 +23,9 @@ if(isset($_POST['nom']))
 	{
 		// La requete SQL a reussie, chercher la première ligne retournée
 		$nouveauUtilisateur=$query->fetch();
+		echo $query->fetch();
 		// Si aucune ligne trouvée... c'est que le nom ou le mot de passe ne sont pas bons.
-		if($nouveauUtilisateur===null)
+		if($nouveauUtilisateur==null)
 		{
 			echo "<p>Connexion échouée.</p>";
 			echo "<p>Banque $nomBanque accorde une grande importance à la sécurité de ses clients.<br/>";
@@ -33,11 +38,11 @@ if(isset($_POST['nom']))
 			session_regenerate_id(true);
 			$_SESSION['utilisateur']=$nouveauUtilisateur;
 			// Rediriger vers la page d'accueil
-			header('Location: index.php');
+			echo "<script type='text/javascript'>document.location.replace('index.php');</script>";
 		}
 	}
 }
-
+}
 // Affichage du formulaire de connexion, uniquement pour les utilisateurs pas encore connectés.
 if($utilisateur!==false)
 {
@@ -52,6 +57,6 @@ else
 	echo "</form>";
 }
 
-require_once 'fin-page.php'; 
+require_once 'fin-page.php';
 
 ?>
